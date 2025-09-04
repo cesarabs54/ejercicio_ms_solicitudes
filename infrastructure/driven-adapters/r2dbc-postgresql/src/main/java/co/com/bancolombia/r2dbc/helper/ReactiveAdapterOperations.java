@@ -1,7 +1,9 @@
 package co.com.bancolombia.r2dbc.helper;
 
+import java.lang.reflect.InvocationTargetException;
 import org.reactivecommons.utils.ObjectMapper;
 import org.springframework.data.domain.Example;
+import org.springframework.data.r2dbc.repository.R2dbcRepository;
 import org.springframework.data.repository.query.ReactiveQueryByExampleExecutor;
 import org.springframework.data.repository.reactive.ReactiveCrudRepository;
 import reactor.core.publisher.Flux;
@@ -10,7 +12,7 @@ import reactor.core.publisher.Mono;
 import java.lang.reflect.ParameterizedType;
 import java.util.function.Function;
 
-public abstract class ReactiveAdapterOperations<E, D, I, R extends ReactiveCrudRepository<D, I> & ReactiveQueryByExampleExecutor<D>> {
+public abstract class ReactiveAdapterOperations<E, D, I, R extends R2dbcRepository<D, I>> {
     protected R repository;
     protected ObjectMapper mapper;
     private final Class<D> dataClass;
@@ -63,5 +65,32 @@ public abstract class ReactiveAdapterOperations<E, D, I, R extends ReactiveCrudR
     public Flux<E> findAll() {
         return repository.findAll()
                 .map(this::toEntity);
+    }
+
+    public Mono<E> update(E entity) {
+        var data = toData(entity);
+        invokeSetAsNotNewIfExists(data);
+        return saveData(data).map(this::toEntity);
+    }
+
+    @SuppressWarnings("all")
+    private void invokeSetAsNotNewIfExists(D data) {
+        try {
+            var method = data.getClass().getMethod("setAsNotNew");
+            method.invoke(data);
+        } catch (IllegalAccessException | InvocationTargetException e) {
+            throw new SetAsNotNewException(
+                    "Error invocando setAsNotNew en " + data.getClass().getName(),
+                    e);
+        } catch (NoSuchMethodException ignored) {
+            // No se requiere acción ya que 'setAsNotNew' no existe en este caso
+        }
+    }
+
+    static class SetAsNotNewException extends RuntimeException {
+
+        public SetAsNotNewException(String message, Throwable cause) {
+            super(message, cause);
+        }
     }
 }
