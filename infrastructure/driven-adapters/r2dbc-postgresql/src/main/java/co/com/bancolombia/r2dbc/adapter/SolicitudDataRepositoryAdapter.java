@@ -31,10 +31,16 @@ public class SolicitudDataRepositoryAdapter extends ReactiveAdapterOperations<
     @Override
     public Mono<Solicitud> save(Solicitud entity) {
         if (entity.getIdSolicitud() != null) {
-            return super.save(entity);
+            var data = toData(entity);
+            data.setIdEstado(entity.getEstado().getIdEstado());
+            data.setIdTipoPrestamo(entity.getTipoPrestamo().getIdTipoPrestamo());
+            return super.saveData(data).map(this::toEntity);
         }
         var generatedId = IdGeneratorUtil.generateDefaultUUID();
         entity.setIdSolicitud(generatedId);
-        return super.save(entity);
+        var data = toData(entity);
+        data.setIdEstado(entity.getEstado().getIdEstado());
+        data.setIdTipoPrestamo(entity.getTipoPrestamo().getIdTipoPrestamo());
+        return super.saveData(data).map(this::toEntity);
     }
 }

@@ -14,7 +14,7 @@ import org.springframework.data.relational.core.mapping.Table;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Table("tipos_prestamos")
+@Table("tipo_prestamos")
 public class TipoPrestamoData implements Persistable<UUID> {
 
     private UUID idTipoPrestamo;

@@ -1,0 +1,24 @@
+package co.com.bancolombia.api.util;
+
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
+import jakarta.validation.Validator;
+import java.util.Set;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
+import reactor.core.publisher.Mono;
+
+@Component
+@RequiredArgsConstructor
+public class RequestValidator {
+
+    private final Validator validator;
+
+    public <T> Mono<T> validate(T request) {
+        Set<ConstraintViolation<T>> violations = validator.validate(request);
+        if (!violations.isEmpty()) {
+            return Mono.error(new ConstraintViolationException(violations));
+        }
+        return Mono.just(request);
+    }
+}

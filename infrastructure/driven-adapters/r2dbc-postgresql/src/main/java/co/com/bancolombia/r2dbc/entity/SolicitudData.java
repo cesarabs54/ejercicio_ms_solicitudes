@@ -21,6 +21,7 @@ public class SolicitudData implements Persistable<UUID> {
     private BigDecimal monto;
     private Integer plazo;
     private String email;
+    private String documentNumber;
     private UUID idEstado;
     private UUID idTipoPrestamo;
 
