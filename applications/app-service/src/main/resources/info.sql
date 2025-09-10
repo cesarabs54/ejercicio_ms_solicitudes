@@ -38,7 +38,9 @@ VALUES ('9baecc64-cf93-4969-8ef8-c231f86053c5', 'Pendiente de revisión',
        ('0ffb3511-0dd0-4777-924a-c02d825a3ae4', 'Aprobado con condiciones',
         'La solicitud ha sido aceptada con condiciones adicionales.'),
        ('8fa5f48c-7152-42cb-82d0-18d575a2f215', 'Cancelado por el solicitante',
-        'La solicitud fue cancelada por el usuario antes de su aprobación.');
+        'La solicitud fue cancelada por el usuario antes de su aprobación.'),
+       ('d2f7d90a-6f24-4a63-8b94-1a8d9db3a6f5', 'Revisión manual',
+        'La solicitud requiere revisión manual por parte de un asesor.');
 
 
 INSERT INTO tipo_prestamos (id_tipo_prestamo, nombre, monto_minimo, monto_maximo, tasa_interes,
