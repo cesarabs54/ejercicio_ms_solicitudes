@@ -5,9 +5,11 @@ import co.com.bancolombia.model.gateway.EstadoRepository;
 import co.com.bancolombia.r2dbc.entity.EstadoData;
 import co.com.bancolombia.r2dbc.helper.ReactiveAdapterOperations;
 import co.com.bancolombia.r2dbc.repository.EstadoDataRepository;
+import java.util.Set;
 import java.util.UUID;
 import org.reactivecommons.utils.ObjectMapper;
 import org.springframework.stereotype.Component;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Component
@@ -24,6 +26,11 @@ public class EstadoDataRepositoryAdapter extends ReactiveAdapterOperations<
     public Mono<Estado> findByNombre(String nombre) {
         return repository.findByNombre(nombre)
                 .map(this::toEntity);
+    }
+
+    @Override
+    public Flux<Estado> findByNombreIn(Set<String> nombres) {
+        return repository.findByNombreIn(nombres).map(this::toEntity);
     }
 
     @Override

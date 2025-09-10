@@ -2,14 +2,18 @@ package co.com.bancolombia.api.handler;
 
 import co.com.bancolombia.api.dto.request.SolicitudRequest;
 import co.com.bancolombia.api.util.RequestValidator;
+import co.com.bancolombia.model.Solicitud;
 import co.com.bancolombia.model.command.SolicitudCommand;
+import co.com.bancolombia.usecase.ListarPrestamosUseCase;
 import co.com.bancolombia.usecase.api.SolicitarPrestamoUseCase;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Component
@@ -17,6 +21,7 @@ import reactor.core.publisher.Mono;
 public class Handler {
 
     private final SolicitarPrestamoUseCase solicitarPrestamoUseCase;
+    private final ListarPrestamosUseCase listarPrestamosUseCase;
     private final RequestValidator requestValidator;
     private final ObjectMapper objectMapper;
 
@@ -32,4 +37,31 @@ public class Handler {
                         .bodyValue(solicitud)
                 );
     }
+
+    public Mono<ServerResponse> listarPrestamos(ServerRequest request) {
+        int page = request.queryParam("page").map(Integer::parseInt).orElse(0);
+        int size = request.queryParam("size").map(Integer::parseInt).orElse(10);
+
+        Mono<Long> total = listarPrestamosUseCase.count();
+        Flux<Solicitud> data = listarPrestamosUseCase.execute(page, size);
+
+        return Mono.zip(total, data.collectList())
+                .flatMap(tuple -> {
+                    long totalElements = tuple.getT1();
+                    var solicitudes = tuple.getT2();
+
+                    var response = Map.of(
+                            "content", solicitudes,
+                            "page", page,
+                            "size", size,
+                            "totalElements", totalElements,
+                            "totalPages", (int) Math.ceil((double) totalElements / size)
+                    );
+
+                    return ServerResponse.ok()
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .bodyValue(response);
+                });
+    }
+
 }
