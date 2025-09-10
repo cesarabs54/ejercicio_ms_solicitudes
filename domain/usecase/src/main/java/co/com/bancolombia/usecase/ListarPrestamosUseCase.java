@@ -6,15 +6,11 @@ import co.com.bancolombia.model.gateway.EstadoRepository;
 import co.com.bancolombia.model.gateway.SolicitudRepository;
 import java.util.Set;
 import java.util.UUID;
-import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-@RequiredArgsConstructor
-public class ListarPrestamosUseCase {
-
-    private final SolicitudRepository solicitudRepository;
-    private final EstadoRepository estadoRepository;
+public record ListarPrestamosUseCase(SolicitudRepository solicitudRepository,
+                                     EstadoRepository estadoRepository) {
 
     /**
      * Lista solicitudes filtradas por los estados que requieren revisión. Aplica paginación en

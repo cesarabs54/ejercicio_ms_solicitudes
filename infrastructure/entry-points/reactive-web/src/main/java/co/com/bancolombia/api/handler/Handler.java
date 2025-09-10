@@ -1,13 +1,13 @@
 package co.com.bancolombia.api.handler;
 
 import co.com.bancolombia.api.dto.request.SolicitudRequest;
+import co.com.bancolombia.api.dto.response.PageResponse;
+import co.com.bancolombia.api.dto.response.SolicitudResponse;
 import co.com.bancolombia.api.util.RequestValidator;
-import co.com.bancolombia.model.Solicitud;
 import co.com.bancolombia.model.command.SolicitudCommand;
 import co.com.bancolombia.usecase.ListarPrestamosUseCase;
 import co.com.bancolombia.usecase.api.SolicitarPrestamoUseCase;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
@@ -43,19 +43,20 @@ public class Handler {
         int size = request.queryParam("size").map(Integer::parseInt).orElse(10);
 
         Mono<Long> total = listarPrestamosUseCase.count();
-        Flux<Solicitud> data = listarPrestamosUseCase.execute(page, size);
+        Flux<SolicitudResponse> data = listarPrestamosUseCase.execute(page, size)
+                .map(SolicitudResponse::fromModel);
 
         return Mono.zip(total, data.collectList())
                 .flatMap(tuple -> {
                     long totalElements = tuple.getT1();
                     var solicitudes = tuple.getT2();
 
-                    var response = Map.of(
-                            "content", solicitudes,
-                            "page", page,
-                            "size", size,
-                            "totalElements", totalElements,
-                            "totalPages", (int) Math.ceil((double) totalElements / size)
+                    PageResponse<SolicitudResponse> response = new PageResponse<>(
+                            solicitudes,
+                            page,
+                            size,
+                            totalElements,
+                            (int) Math.ceil((double) totalElements / size)
                     );
 
                     return ServerResponse.ok()
@@ -63,5 +64,6 @@ public class Handler {
                             .bodyValue(response);
                 });
     }
+
 
 }
