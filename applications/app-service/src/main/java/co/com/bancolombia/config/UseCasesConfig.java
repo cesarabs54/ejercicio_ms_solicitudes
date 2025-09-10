@@ -3,7 +3,7 @@ package co.com.bancolombia.config;
 import co.com.bancolombia.model.gateway.EstadoRepository;
 import co.com.bancolombia.model.gateway.SolicitudRepository;
 import co.com.bancolombia.model.gateway.TipoPrestamoRepository;
-import co.com.bancolombia.usecase.ListarPrestamosUseCase;
+import co.com.bancolombia.usecase.api.ListarPrestamosUseCase;
 import co.com.bancolombia.usecase.api.SolicitarPrestamoUseCase;
 import co.com.bancolombia.usecase.api.SolicitudUseCase;
 import org.springframework.context.annotation.Bean;

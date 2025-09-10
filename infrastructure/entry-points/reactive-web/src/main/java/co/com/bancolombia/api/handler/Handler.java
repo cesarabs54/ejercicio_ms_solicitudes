@@ -5,7 +5,7 @@ import co.com.bancolombia.api.dto.response.PageResponse;
 import co.com.bancolombia.api.dto.response.SolicitudResponse;
 import co.com.bancolombia.api.util.RequestValidator;
 import co.com.bancolombia.model.command.SolicitudCommand;
-import co.com.bancolombia.usecase.ListarPrestamosUseCase;
+import co.com.bancolombia.usecase.api.ListarPrestamosUseCase;
 import co.com.bancolombia.usecase.api.SolicitarPrestamoUseCase;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -39,7 +39,7 @@ public class Handler {
     }
 
     public Mono<ServerResponse> listarPrestamos(ServerRequest request) {
-        int page = request.queryParam("page").map(Integer::parseInt).orElse(0);
+        int page = request.queryParam("page").map(s -> Integer.parseInt(s) - 1).orElse(0);
         int size = request.queryParam("size").map(Integer::parseInt).orElse(10);
 
         Mono<Long> total = listarPrestamosUseCase.count();
@@ -53,7 +53,7 @@ public class Handler {
 
                     PageResponse<SolicitudResponse> response = new PageResponse<>(
                             solicitudes,
-                            page,
+                            page + 1,
                             size,
                             totalElements,
                             (int) Math.ceil((double) totalElements / size)

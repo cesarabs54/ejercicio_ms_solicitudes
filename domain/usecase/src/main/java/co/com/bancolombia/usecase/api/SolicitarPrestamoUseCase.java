@@ -8,19 +8,9 @@ import co.com.bancolombia.model.gateway.TipoPrestamoRepository;
 import java.math.BigDecimal;
 import reactor.core.publisher.Mono;
 
-public class SolicitarPrestamoUseCase {
-
-    private final EstadoRepository estadoRepository;
-    private final SolicitudRepository solicitudRepository;
-    private final TipoPrestamoRepository tipoPrestamoRepository;
-
-    public SolicitarPrestamoUseCase(EstadoRepository estadoRepository,
-            SolicitudRepository solicitudRepository,
-            TipoPrestamoRepository tipoPrestamoRepository) {
-        this.estadoRepository = estadoRepository;
-        this.solicitudRepository = solicitudRepository;
-        this.tipoPrestamoRepository = tipoPrestamoRepository;
-    }
+public record SolicitarPrestamoUseCase(EstadoRepository estadoRepository,
+                                       SolicitudRepository solicitudRepository,
+                                       TipoPrestamoRepository tipoPrestamoRepository) {
 
     public Mono<Solicitud> execute(SolicitudCommand solicitud) {
         // Busca el estado "Pendiente de revisión" de forma reactiva

@@ -1,4 +1,4 @@
-package co.com.bancolombia.usecase;
+package co.com.bancolombia.usecase.api;
 
 import co.com.bancolombia.model.Estado;
 import co.com.bancolombia.model.Solicitud;
